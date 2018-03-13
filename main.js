@@ -1,7 +1,7 @@
 //Tetris with multiplayer
 //For browsers using Phaser
 //1920x1080 AUTO |CANVAS | AUTO | WEBGL
-var game = new Phaser.Game(1920,900, Phaser.CANVAS, '', {preload: preload, create: create, update: update });
+var game = new Phaser.Game(1024,900, Phaser.CANVAS, '', {preload: preload, create: create, update: update });
 var bmp, sprit, blockGrid = [];
 var mainBlock = [];
 
@@ -41,7 +41,7 @@ function create(){
             mainBlock[mainBlock.length-1].height = 19;
             mainBlock[mainBlock.length-1].tint = '0x00' + (50+w*5) + '00';
         }
-    setBlockType( 7,3 );
+    setBlockType( 1,0 );
 }
 
 function setBlockType( type, rotation ){
@@ -456,11 +456,55 @@ function setBlockType( type, rotation ){
         } 
     } 
 }
+var blockType = 1, blockRotation = 0, up = false, down = false, left = false, right = false;
+
+function rotateBlock( blockT, blockR ){
+    switch( blockT ){
+        case 1: { if( blockR == 0 || blockR == 1 ) return blockR; else return 0; }
+        case 2: { if( blockR == 0 || blockR == 1 ) return blockR; else return 0; }
+        case 3: return 0;
+        case 4: { if( blockR == 0 || blockR == 1 ) return blockR; else return 0; }
+        case 5: { if( blockR >= 0 && blockR <= 3 ) return blockR; else return 0; }
+        case 6: { if( blockR >= 0 && blockR <= 3 ) return blockR; else return 0; }
+        case 7: { if( blockR >= 0 && blockR <= 3 ) return blockR; else return 0; }
+    }
+}
+function moveBlock( xoffset ){
+    var x;
+    for(x=0;x<14;x++)
+        mainBlock[x].x += xoffset * 20;
+}
 
 function update(){
-
-
+    if( game.input.keyboard.isDown(Phaser.Keyboard.DOWN) ){
+        if( !down ){
+            blockType = Math.floor(Math.random()*6+1);
+            blockRotation = 0;
+            setBlockType( blockType , blockRotation ); 
+            down = true;
+        }
+    } else down = false;
+    if( game.input.keyboard.isDown(Phaser.Keyboard.UP) ){
+        if( !up ){
+            blockRotation = rotateBlock( blockType, blockRotation+1 );
+            setBlockType( blockType, blockRotation ); 
+            up = true;
+        }
+    } else up = false;
+    if( game.input.keyboard.isDown(Phaser.Keyboard.LEFT ) ){
+        if( !left ){
+            moveBlock( -1 );
+            left = true;
+        }
+    } else left = false;
+    if( game.input.keyboard.isDown(Phaser.Keyboard.RIGHT ) ){
+        if( !right ){
+            moveBlock( 1 );
+            right = true;
+        }
+    } else right = false;
 }
+
 
 
 /* Block Types
